@@ -22,10 +22,13 @@ class CreateStudentsTable extends Migration
             $table->string('other_name')->nullable();
             $table->date('dob');
             $table->text('photo')->nullable();
-            $table->enum('sex', ['m', 'f'])->default('m');
+            $table->enum('sex', ['male', 'female', 'unspecified'])->default('unspecified');
             $table->string('religion')->nullable();
             $table->string('marital_status')->nullable();
             $table->string('nationality')->nullable();
+            $table->string('phone_one')->nullable();
+            $table->string('phone_two')->nullable();
+            $table->string('email')->nullable();
             $table->enum('diceased', ['0', '1'])->default('0');
             $table->softDeletes();
             $table->timestamps();

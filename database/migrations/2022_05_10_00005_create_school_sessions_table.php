@@ -18,7 +18,7 @@ class CreateSchoolSessionsTable extends Migration
             $table->string('name')->unique();
             $table->date('start_date');
             $table->date('end_date')->nullable();
-            $table->enum('lockec', ['0','1'])->default('0');
+            $table->enum('locked', ['0','1'])->default('0');
             $table->timestamps();
         });
     }

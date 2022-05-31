@@ -10,7 +10,7 @@
 |
 */
 
-Route::get('/hello', function () {
+Route::get('/', function () {
     return view('welcome');
 });
 

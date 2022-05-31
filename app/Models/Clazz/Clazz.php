@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Clazz;
-use Schoolarize\Schoolarizer\Models\Term\Term;
+use App\Models\Term\Term;
 
 
 

@@ -8,11 +8,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-use App\Models\Clazz\Clazz;
+use App\Models\Clazz\ClassRegistration;
 
 
 
-class ClazzController extends Controller
+class ClassRegistrationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -44,14 +44,26 @@ class ClazzController extends Controller
     public function store(Request $request)
     {
        $data = $request->validate([
-           'name'=> 'required|min:3|max:50|unique:classes,name'
+           'student_id'=> 'required|exists:students,id',
+           'session_id'=> 'required|exists:school_sessions,id',
+           'class_id'=> 'required|exists:classes,id',
+           'registration_date' => 'nullable|date'
        ]);
 
-        $clazz = new Clazz();
-        $clazz->name = $request->name;
+       $check = ClassRegistration::where('session_id', $request->session_id)->where('student_id', $request->student_id)->first();
+       if($check){
+           abort(422, 'This student is already registered for this class and session');
+       }
+       
 
-        $clazz->save();
-        return ($request->expectsJson()) ? response()->json(['message' => 'Class created successfully', 'clazz' => $clazz], 200) : 'view';
+        $registration = new ClassRegistration();
+        $registration->student_id = $request->student_id;
+        $registration->session_id = $request->session_id;
+        $registration->class_id = $request->class_id;
+        $registration->registration_date = ($request->registration_date) ? $request->registration_date : toDay();
+        $registration->save();
+
+        return ($request->expectsJson()) ? response()->json(['message' => 'Registration Permformed successfully', 'registration' => $registration], 200) : 'view';
     }
 
     /**

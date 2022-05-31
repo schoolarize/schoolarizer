@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Student\Student;
 
+use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
+
+
 
 
 
@@ -21,7 +25,7 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::paginate(4);
-        return (request()->expectsJson()) ? response()->json($students, 200) : 'view';
+        return (request()->expectsJson()) ? response()->json($students, 200) : response()->json($students, 200) ;
     }
 
     /**
@@ -40,18 +44,30 @@ class StudentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreSessionRequest $request)
+
+    public function store(StoreStudentRequest $request)
     {
         $data = $request->validated();
 
-        $session = new Session();
-        $session->name = $request->name;
-        $session->start_date = $request->start_date;
-        $session->end_date = $request->end_date;
+        $student = new Student();
+        $student->regno = $request->regno;
+        $student->accessno = $request->accessno;
+        $student->first_name = $request->first_name;
+        $student->last_name = $request->last_name;
+        $student->other_name = $request->other_name;
+        $student->dob = $request->dob;
+        $student->photo = ($request->hasFile('photo')) ? 'storage/'.request()->photo->store(config('pagman.media_dir', 'media'), 'public') : null;
+        $student->sex = $request->sex;
+        $student->religion = $request->religion;
+        $student->marital_status = $request->marital_status;
+        $student->nationality = $request->nationality;
+        $student->diceased = ($request->has('diceased')) ? $request->deceased : '0';
+        $student->phone_one = $request->phone_one;
+        $student->phone_two = $request->phone_two;
+        $student->email = $request->email;
+        $student->save();
 
-        $session->save();
-
-        return ($request->expectsJson()) ? response()->json(['message' => 'session created successfully', 'session' => $session], 200) : 'view';
+        return ($request->expectsJson()) ? response()->json(['message' => 'Student added successfully', 'student' => $student], 200) : 'view';
     }
 
     /**
@@ -62,8 +78,8 @@ class StudentController extends Controller
      */
     public function show($id)
     {
-        $session = Session::findOrFail($id);
-        return  (request()->expectsJson()) ? response()->json($session, 200) : 'view';
+        $student = Student::where('id', $id)->firstOrFail();
+        return  (request()->expectsJson()) ? response()->json($student, 200) : 'view';
     }
 
     /**
@@ -87,17 +103,41 @@ class StudentController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->validate([
-            'name' => 'required|min:3|max:20', Rule::unique('school_sessions')->ignore($id),
-            'start_date' => 'required', Rule::unique('school_sessions')->ignore($id),
+            'regno' => 'required', Rule::unique('students')->ignore($id),
+            'accessno' => 'nullable',  Rule::unique('students')->ignore($id),
+            'first_name' => 'required|min:3',
+            'last_name' => 'required|min:3',
+            'other_name' => 'nullable|min:3',
+            'dob' => 'required|date',
+            'photo' => 'nullable|mimes:jpeg,png,jpg|max:2048',
+            'sex' => 'required',
+            'religion' => 'nullable',
+            'marital_status' => 'nullable',
+            'nationlity' => 'nullable',
+            'email' => 'nullable|email'
         ]);
-        $session = Session::findOrFail($id);
 
-        $session->name = $request->name;
-        $session->start_date = $request->start_date;
-        $session->end_date = $request->end_date;
-        $session->save();
+        $student = Student::findOrFail($id);
 
-        return ($request->expectsJson()) ? response()->json(['message' => 'User updated successfully', 'session' => $session], 200) : 'view';
+        $student->regno = $request->regno;
+        $student->accessno = $request->accessno;
+        $student->first_name = $request->first_name;
+        $student->last_name = $request->last_name;
+        $student->other_name = $request->other_name;
+        $student->dob = $request->dob;
+        $student->photo = ($request->hasFile('photo')) ? 'storage/'.request()->photo->store(config('pagman.media_dir', 'media'), 'public') : null;
+        $student->sex = $request->sex;
+        $student->religion = $request->religion;
+        $student->marital_status = $request->marital_status;
+        $student->nationality = $request->nationality;
+        $student->diceased = ($request->has('diceased')) ? $request->deceased : '0';
+        $student->phone_one = $request->phone_one;
+        $student->phone_two = $request->phone_two;
+        $student->email = $request->email;
+
+        $student->save();
+
+        return ($request->expectsJson()) ? response()->json(['message' => 'Student updated successfully', 'student' => $student], 200) : 'view';
     }
 
 
@@ -109,8 +149,8 @@ class StudentController extends Controller
      */
     public function destroy($id)
     {
-        $session = Session::destroy($id);
-        return (request()->expectsJson()) ? response()->json(['message' => 'Session deleted successfully'], 200) : 'view';
+        $student = Student::destroy($id);
+        return (request()->expectsJson()) ? response()->json(['message' => 'Student deleted successfully'], 200) : 'view';
     }
 
 }

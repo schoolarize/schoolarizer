@@ -47,5 +47,12 @@ Route::group(['middleware' => ['auth:api']],function () {
     Route::get('/classes/destroy/{id}', 'Clazz\ClazzController@destroy');
 
     Route::get('/students', 'Student\StudentController@index');
+    Route::post('/students/store', 'Student\StudentController@store');
+    Route::get('/students/show/{id}', 'Student\StudentController@show');
+    Route::get('/students/destroy/{id}', 'Student\StudentController@destroy');
+    Route::post('/students/update/{id}', 'Student\StudentController@update');
+
+    Route::post('/class/registration', 'Clazz\ClassRegistrationController@store');
+
 
 });

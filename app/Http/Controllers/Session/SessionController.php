@@ -22,7 +22,7 @@ class SessionController extends Controller
      */
     public function index()
     {
-        $sessions = Session::paginate(4);
+        $sessions = Session::withCount('registrations')->paginate(4);
         return (request()->expectsJson()) ? response()->json($sessions, 200) : 'view';
     }
 
